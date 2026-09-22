@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northstar Airways — Fly Farther</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Amplitude Analytics with Engagement Plugin -->
+    <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.js"></script>
+    <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.engagement.js"></script>
+    <script>
+
+        // Add engagement plugin only (session replay should be included)
+        if (window.engagement && window.engagement.plugin) {
+            console.log('Adding engagement plugin...');
+            const engagementPlugin = window.engagement.plugin();
+            console.log('Engagement plugin object:', engagementPlugin);
+            window.amplitude.add(engagementPlugin);
+            console.log('Engagement plugin added');
+        } else {
+            console.warn('Engagement plugin not found');
+        }
+        const sessionReplayTracking = window.sessionReplay.plugin();
+
+        window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
+        // Initialize Amplitude
+        window.amplitude.init('f0db16a2ac68ab1c81271aeabdb148de', {
+            "fetchRemoteConfig": true,
+            "autocapture": true
+        });
+
+        console.log('Amplitude initialized successfully');
+
+    </script>
+
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span class="logo-mark" aria-hidden="true"></span>
+                Northstar Airways
+            </div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#flights">Flights</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li id="subscribeNavItem"><a href="#" onclick="startFreeTrial(); return false;">Subscribe</a></li>
+                <li id="premiumNavItem"><a href="#" onclick="upgradeToPremium(); return false;">Upgrade to Premium</a></li>
+                <li id="loginNavItem"><a href="#" onclick="openLoginModal()">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-media" role="img" aria-label="Aircraft climbing through a clear sky"></div>
+        <div class="hero-scrim"></div>
+        <div class="container hero-content">
+            <p class="brand-lockup">Northstar Airways</p>
+            <h1>Fly farther on every journey</h1>
+            <p class="hero-support">Nonstop routes, fair fares, and a cabin built for real rest.</p>
+            <a href="#flights" class="btn btn-hero">Book a flight</a>
+        </div>
+    </section>
+
+    <!-- Flights Section -->
+    <section id="flights" class="flights">
+        <div class="container">
+            <h2 class="section-title">Featured Flights</h2>
+            <p class="section-lead">Search and book popular routes departing this week.</p>
+
+            <!-- Filters -->
+            <div class="filters">
+                <h3>Filter Flights</h3>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="priceFilter">Fare Range:</label>
+                        <select id="priceFilter">
+                            <option value="">All Fares</option>
+                            <option value="0-300">Under $300</option>
+                            <option value="300-500">$300 – $500</option>
+                            <option value="500-999999">$500+</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="bedroomFilter">Stops:</label>
+                        <select id="bedroomFilter">
+                            <option value="">Any</option>
+                            <option value="0">Nonstop</option>
+                            <option value="1">1+ stop</option>
+                            <option value="2">2+ stops</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="typeFilter">Cabin:</label>
+                        <select id="typeFilter">
+                            <option value="">All Cabins</option>
+                            <option value="economy">Economy</option>
+                            <option value="business">Business</option>
+                            <option value="first">First</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-buttons">
+                    <button class="btn" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn-secondary" onclick="clearFilters()">Clear All</button>
+                </div>
+            </div>
+
+            <div class="flight-grid" id="propertyGrid">
+                <div class="flight-card" data-price="349" data-bedrooms="0" data-type="economy"
+                    onclick="ClickFeatureProperty(1)">
+                    <div class="flight-route-visual economy"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">Economy</div>
+                        <div class="flight-price">$349</div>
+                        <h3 class="flight-title">New York → London</h3>
+                        <p class="flight-location">JFK → LHR · Nonstop</p>
+                        <p class="flight-features">7h 15m · Morning departure · NS 214</p>
+                    </div>
+                </div>
+
+                <div class="flight-card" data-price="289" data-bedrooms="1" data-type="economy"
+                    onclick="ClickFeatureProperty(2)">
+                    <div class="flight-route-visual economy"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">Economy</div>
+                        <div class="flight-price">$289</div>
+                        <h3 class="flight-title">Chicago → Madrid</h3>
+                        <p class="flight-location">ORD → MAD · 1 stop</p>
+                        <p class="flight-features">11h 40m · Afternoon · NS 508</p>
+                    </div>
+                </div>
+
+                <div class="flight-card" data-price="890" data-bedrooms="0" data-type="business"
+                    onclick="ClickFeatureProperty(3)">
+                    <div class="flight-route-visual business"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">Business</div>
+                        <div class="flight-price">$890</div>
+                        <h3 class="flight-title">Los Angeles → Tokyo</h3>
+                        <p class="flight-location">LAX → HND · Nonstop</p>
+                        <p class="flight-features">11h 05m · Overnight · NS 71</p>
+                    </div>
+                </div>
+
+                <div class="flight-card" data-price="420" data-bedrooms="0" data-type="economy"
+                    onclick="ClickFeatureProperty(4)">
+                    <div class="flight-route-visual economy"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">Economy</div>
+                        <div class="flight-price">$420</div>
+                        <h3 class="flight-title">Boston → Dublin</h3>
+                        <p class="flight-location">BOS → DUB · Nonstop</p>
+                        <p class="flight-features">6h 20m · Evening · NS 336</p>
+                    </div>
+                </div>
+
+                <div class="flight-card" data-price="199" data-bedrooms="2" data-type="economy"
+                    onclick="ClickFeatureProperty(5)">
+                    <div class="flight-route-visual economy"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">Economy</div>
+                        <div class="flight-price">$199</div>
+                        <h3 class="flight-title">Miami → Lisbon</h3>
+                        <p class="flight-location">MIA → LIS · 2 stops</p>
+                        <p class="flight-features">14h 10m · Redeye · NS 902</p>
+                    </div>
+                </div>
+
+                <div class="flight-card" data-price="1250" data-bedrooms="0" data-type="first"
+                    onclick="ClickFeatureProperty(6)">
+                    <div class="flight-route-visual first"></div>
+                    <div class="flight-info">
+                        <div class="flight-type">First</div>
+                        <div class="flight-price">$1,250</div>
+                        <h3 class="flight-title">San Francisco → Singapore</h3>
+                        <p class="flight-location">SFO → SIN · Nonstop</p>
+                        <p class="flight-features">16h 45m · Flagship suite · NS 1</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-results" id="noResults">
+                No flights match your current filters. Please try different criteria.
+            </div>
+        </div>
+    </section>
+
+    <!-- Flight Modal -->
+    <div id="propertyModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closePropertyModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Flight details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About Northstar Airways</h2>
+                    <p>We connect cities across the Atlantic and Pacific with a fleet built for long-haul comfort and on-time reliability.</p>
+                    <p>From Economy essentials to First Suites, every cabin is designed for the journey — not just the destination.</p>
+                    <a href="#contact" class="btn">Contact Us</a>
+                </div>
+                <div class="about-image" role="img" aria-label="Cabin aisle looking toward the cockpit"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-lead">Questions about bookings, baggage, or Premium membership? Reach our crew desk.</p>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p>Phone: 1-800-NORTHSTAR</p>
+                    <p>Email: fly@northstarairways.com</p>
+                    <p>HQ: 500 Runway Blvd, Jet City, NY 10001</p>
+                    <p>Hours: Daily 6AM–Midnight ET</p>
+                </div>
+
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Northstar Airways. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+            <div class="login-container">
+                <h2>Login</h2>
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="estateAgent">Travel Partner:</label>
+                        <select id="estateAgent" name="estateAgent" required>
+                            <option value="">Select Travel Partner</option>
+                            <option value="premium-properties">Skyline Travel Group</option>
+                            <option value="downtown-realty">Metro Booking Co.</option>
+                            <option value="riverside-homes">Harbor Voyages</option>
+                            <option value="luxury-estates">Summit Concierge Air</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginName">Name:</label>
+                        <input type="text" id="loginName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginUserId">User ID:</label>
+                        <input type="text" id="loginUserId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" name="password" required>
+                    </div>
+                    <div class="login-buttons">
+                        <button type="submit" class="btn">Login</button>
+                        <button type="button" class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                    </div>
+                    <div id="loginError" class="login-error"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Status Display -->
+    <div id="userStatus" class="user-status hidden">
+        <div class="account-info">
+            <div id="estateAgentDisplay" class="estate-agent-info"></div>
+            <span id="planLabel" class="plan-label"></span>
+            <span id="userWelcome"></span>
+        </div>
+        <div class="user-status-actions">
+            <button type="button" id="subscribeBtn" class="btn btn-subscribe" onclick="startFreeTrial()">Start free trial</button>
+            <button type="button" id="upgradePremiumBtn" class="btn btn-premium" onclick="upgradeToPremium()">Upgrade to Premium</button>
+            <button class="btn-secondary" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script src="script.js?v=1"></script>
+</body>
+
+</html>

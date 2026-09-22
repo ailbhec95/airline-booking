@@ -1,0 +1,747 @@
+:root {
+    --blue: #0b3d6e;
+    --blue-deep: #072848;
+    --blue-bright: #1565a8;
+    --red: #c8102e;
+    --red-deep: #9a0c23;
+    --ink: #122033;
+    --muted: #5a6b7d;
+    --paper: #f4f7fb;
+    --white: #ffffff;
+    --line: rgba(11, 61, 110, 0.12);
+    --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --font-body: "Manrope", "Segoe UI", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.6;
+    color: var(--ink);
+    background:
+        radial-gradient(ellipse 80% 50% at 100% 0%, rgba(200, 16, 46, 0.06), transparent 50%),
+        radial-gradient(ellipse 70% 40% at 0% 100%, rgba(11, 61, 110, 0.08), transparent 45%),
+        var(--paper);
+}
+
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Header */
+header {
+    background: linear-gradient(90deg, var(--blue-deep) 0%, var(--blue) 55%, #143e6a 100%);
+    color: var(--white);
+    padding: 0.9rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--red);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.logo-mark {
+    width: 1.1rem;
+    height: 1.1rem;
+    background: var(--red);
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    display: inline-block;
+    transform: rotate(90deg);
+    animation: markPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes markPulse {
+    0%, 100% { opacity: 1; transform: rotate(90deg) scale(1); }
+    50% { opacity: 0.75; transform: rotate(90deg) scale(1.08); }
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    justify-content: flex-end;
+}
+
+nav a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    opacity: 0.92;
+}
+
+nav a:hover {
+    opacity: 1;
+    color: #ffd6dc;
+}
+
+/* Hero — full-bleed */
+.hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    color: var(--white);
+}
+
+.hero-media {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(120deg, rgba(7, 40, 72, 0.55), transparent 55%),
+        url("https://images.unsplash.com/photo-1436491865332-7a61a1093540?auto=format&fit=crop&w=2000&q=80")
+            center / cover no-repeat;
+    animation: heroDrift 28s ease-in-out infinite alternate;
+}
+
+@keyframes heroDrift {
+    from { transform: scale(1) translate3d(0, 0, 0); }
+    to { transform: scale(1.06) translate3d(-1.5%, -1%, 0); }
+}
+
+.hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(7, 40, 72, 0.25) 0%,
+        rgba(7, 40, 72, 0.45) 45%,
+        rgba(7, 40, 72, 0.88) 100%
+    );
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 24px 5rem;
+    max-width: 720px;
+    margin: 0;
+    margin-right: auto;
+    animation: heroRise 0.9s ease-out both;
+}
+
+@keyframes heroRise {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.brand-lockup {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    color: var(--white);
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+}
+
+.brand-lockup::after {
+    content: "";
+    display: block;
+    width: 4.5rem;
+    height: 4px;
+    margin-top: 0.65rem;
+    background: var(--red);
+}
+
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+    max-width: 16ch;
+}
+
+.hero-support {
+    font-size: 1.08rem;
+    margin-bottom: 1.75rem;
+    max-width: 36ch;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.btn {
+    background: var(--red);
+    color: var(--white);
+    padding: 12px 26px;
+    text-decoration: none;
+    border-radius: 2px;
+    display: inline-block;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--red-deep);
+    transform: translateY(-1px);
+}
+
+.btn-hero {
+    padding: 14px 32px;
+    font-size: 1rem;
+}
+
+/* Flights */
+.flights {
+    padding: 4.5rem 0 3.5rem;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    text-align: left;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    color: var(--blue);
+}
+
+.section-lead {
+    color: var(--muted);
+    margin-bottom: 2rem;
+    max-width: 42ch;
+}
+
+.filters {
+    background: var(--white);
+    padding: 1.5rem 1.75rem;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--blue);
+    margin-bottom: 2rem;
+}
+
+.filters h3 {
+    margin-bottom: 1rem;
+    color: var(--blue);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--blue);
+}
+
+.filter-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--blue);
+    padding: 10px 20px;
+    border: 1.5px solid var(--blue);
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: rgba(11, 61, 110, 0.06);
+}
+
+.flight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.flight-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.flight-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(200, 16, 46, 0.35);
+    box-shadow: 0 12px 28px rgba(11, 61, 110, 0.12);
+}
+
+.flight-route-visual {
+    height: 140px;
+    position: relative;
+    background:
+        linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-bright) 100%);
+    overflow: hidden;
+}
+
+.flight-route-visual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 70%, rgba(255, 255, 255, 0.15), transparent 40%),
+        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+}
+
+.flight-route-visual::after {
+    content: "";
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    top: 50%;
+    height: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.85) 0 8px,
+        transparent 8px 16px
+    );
+    transform: translateY(-50%);
+}
+
+.flight-route-visual.business {
+    background: linear-gradient(135deg, #0a2f55 0%, #1a5f9e 70%, #c8102e 140%);
+}
+
+.flight-route-visual.first {
+    background: linear-gradient(135deg, #061a33 0%, #0b3d6e 45%, #c8102e 100%);
+}
+
+.flight-info {
+    padding: 1.25rem 1.35rem 1.5rem;
+}
+
+.flight-price {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.15rem;
+}
+
+.flight-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+}
+
+.flight-location {
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    font-size: 0.92rem;
+}
+
+.flight-features {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.flight-type {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    padding: 3px 9px;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+}
+
+.flight-card.hidden {
+    display: none;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 1.05rem;
+    display: none;
+}
+
+/* About */
+.about {
+    padding: 4rem 0;
+    background:
+        linear-gradient(180deg, rgba(11, 61, 110, 0.04), transparent),
+        var(--white);
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.about-text h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--blue);
+}
+
+.about-text p {
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+.about-image {
+    height: 320px;
+    border-radius: 2px;
+    background:
+        linear-gradient(160deg, rgba(7, 40, 72, 0.35), rgba(200, 16, 46, 0.25)),
+        url("https://images.unsplash.com/photo-1542296332-2e4473faf803?auto=format&fit=crop&w=1200&q=80")
+            center / cover no-repeat;
+    box-shadow: 0 16px 40px rgba(11, 61, 110, 0.15);
+}
+
+/* Contact */
+.contact {
+    padding: 4rem 0;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.contact-info h3 {
+    margin-bottom: 1rem;
+    color: var(--blue);
+    font-size: 1.15rem;
+}
+
+.contact-info p {
+    margin-bottom: 0.55rem;
+    color: var(--muted);
+}
+
+.contact-form {
+    background: var(--white);
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--red);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--paper);
+}
+
+.form-group textarea {
+    height: 110px;
+    resize: vertical;
+}
+
+/* Footer */
+footer {
+    background: var(--blue-deep);
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 3px solid var(--red);
+    font-size: 0.9rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(7, 40, 72, 0.55);
+}
+
+.modal-content {
+    background-color: var(--white);
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 2px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    border-top: 4px solid var(--red);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1rem;
+    top: 0.6rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--red);
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--blue);
+}
+
+.login-form input,
+.login-form select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 2px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--paper);
+    transition: border-color 0.2s ease;
+}
+
+.login-form input:focus,
+.login-form select:focus {
+    outline: none;
+    border-color: var(--blue-bright);
+}
+
+.login-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.login-error {
+    color: var(--red);
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.login-error.show {
+    display: block;
+}
+
+/* User Status */
+.user-status {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: var(--white);
+    padding: 1rem;
+    border-radius: 2px;
+    box-shadow: 0 8px 28px rgba(11, 61, 110, 0.18);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    z-index: 999;
+    min-width: 280px;
+}
+
+.user-status-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.plan-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.btn-subscribe {
+    background: var(--blue);
+    padding: 8px 14px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.btn-subscribe:hover {
+    background: var(--blue-deep);
+}
+
+.btn-premium {
+    background: var(--red);
+    padding: 8px 14px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.btn-premium:hover {
+    background: var(--red-deep);
+}
+
+.user-status.hidden {
+    display: none;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.estate-agent-info {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    background: var(--paper);
+    border-left: 3px solid var(--blue);
+}
+
+.user-status span {
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.user-status .plan-label {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    nav ul {
+        gap: 0.85rem 1rem;
+        justify-content: flex-start;
+    }
+
+    .hero {
+        min-height: 78vh;
+    }
+
+    .hero-content {
+        padding-bottom: 3rem;
+    }
+
+    .about-content,
+    .contact-content {
+        grid-template-columns: 1fr;
+    }
+
+    .flight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-row {
+        grid-template-columns: 1fr;
+    }
+
+    .user-status {
+        position: static;
+        margin: 1rem;
+        right: auto;
+        top: auto;
+    }
+}
