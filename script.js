@@ -1,9 +1,23 @@
 
-// Flight data for modal details (Amplitude event property keys kept identical)
+/**
+ * Format a fare for display. Amplitude receives numeric $price/$revenue + ISO $currency
+ * (see https://amplitude.com/docs/data/currency-conversion).
+ */
+function formatFlightPrice(amount, currency) {
+    return new Intl.NumberFormat('en', {
+        style: 'currency',
+        currency: currency,
+        maximumFractionDigits: currency === 'JPY' ? 0 : 2,
+    }).format(amount);
+}
+
+// Flight data — each route priced in a local ISO 4217 currency for Amplitude conversion
 const propertyData = {
     1: {
         title: "New York → London",
-        price: "$349",
+        priceAmount: 349,
+        currency: "USD",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "JFK → LHR",
         type: "Economy",
         beds: 0,
@@ -14,7 +28,9 @@ const propertyData = {
     },
     2: {
         title: "Chicago → Madrid",
-        price: "$289",
+        priceAmount: 265,
+        currency: "EUR",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "ORD → MAD",
         type: "Economy",
         beds: 1,
@@ -25,7 +41,9 @@ const propertyData = {
     },
     3: {
         title: "Los Angeles → Tokyo",
-        price: "$890",
+        priceAmount: 132000,
+        currency: "JPY",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "LAX → HND",
         type: "Business",
         beds: 0,
@@ -36,7 +54,9 @@ const propertyData = {
     },
     4: {
         title: "Boston → Dublin",
-        price: "$420",
+        priceAmount: 320,
+        currency: "GBP",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "BOS → DUB",
         type: "Economy",
         beds: 0,
@@ -47,7 +67,9 @@ const propertyData = {
     },
     5: {
         title: "Miami → Lisbon",
-        price: "$199",
+        priceAmount: 185,
+        currency: "EUR",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "MIA → LIS",
         type: "Economy",
         beds: 2,
@@ -58,7 +80,9 @@ const propertyData = {
     },
     6: {
         title: "San Francisco → Singapore",
-        price: "$1,250",
+        priceAmount: 1680,
+        currency: "SGD",
+        get price() { return formatFlightPrice(this.priceAmount, this.currency); },
         location: "SFO → SIN",
         type: "First",
         beds: 0,
@@ -307,7 +331,7 @@ function ClickFeatureProperty(propertyId) {
     
     // Send custom event to Amplitude using Browser SDK 2
     if (typeof amplitude !== 'undefined') {
-        amplitude.track('Clicked Feature Property', {
+        amplitude.track('Clicked Featured Flight', {
             propertyId: propertyId,
             propertyTitle: property.title,
             propertyPrice: property.price,
@@ -316,14 +340,14 @@ function ClickFeatureProperty(propertyId) {
             propertyBedrooms: property.beds,
             propertyBathrooms: property.baths,
             propertySqft: property.sqft,
-            pageSection: 'featured_properties',
+            pageSection: 'featured_flights',
             action: 'click',
-            elementType: 'property_card'
+            elementType: 'flight_card'
         });
         
-        console.log('Amplitude Clicked Feature Property event sent for property:', propertyId);
+        console.log('Amplitude Clicked Featured Flight event sent for flight:', propertyId);
     } else {
-        console.log('Amplitude not loaded - Clicked Feature Property event for property:', propertyId);
+        console.log('Amplitude not loaded - Clicked Featured Flight event for flight:', propertyId);
     }
     
     // Continue with existing functionality
@@ -408,11 +432,11 @@ function applyFilters() {
         
         // Only send event if at least one filter is applied
         if (Object.keys(filterEventData).length > 0) {
-            amplitude.track('Filter Applied', filterEventData);
-            console.log('Amplitude Filter Applied event sent:', filterEventData);
+            amplitude.track('Flight Filter Applied', filterEventData);
+            console.log('Amplitude Flight Filter Applied event sent:', filterEventData);
         }
     } else {
-        console.log('Amplitude not loaded - Filter Applied event skipped');
+        console.log('Amplitude not loaded - Flight Filter Applied event skipped');
     }
 }
 
@@ -441,8 +465,10 @@ function openPropertyModal(propertyId) {
         <div style="margin: 1rem 0;">
             <span style="font-size: 1.5rem; color: var(--red); font-weight: bold;">${property.price}</span>
             <span style="background: var(--blue); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; margin-left: 1rem;">${property.type}</span>
+            <span style="background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem; font-weight: 600;">${property.currency}</span>
         </div>
-        <p style="color: var(--muted); margin-bottom: 1rem;">${property.location}</p>
+        <p style="color: var(--muted); margin-bottom: 0.5rem;">${property.location}</p>
+        <p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">Fare: ${property.priceAmount.toLocaleString('en')} ${property.currency} (local currency)</p>
         <div style="display: flex; gap: 2rem; margin-bottom: 1rem; color: var(--muted); flex-wrap: wrap;">
             <span>${stopsLabel}</span>
             <span>${property.sqft}</span>
@@ -455,7 +481,7 @@ function openPropertyModal(propertyId) {
             ${property.features.map(feature => `<li style="margin: 0.5rem 0;">${feature}</li>`).join('')}
         </ul>
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <button class="btn" onclick="contactAboutProperty('${property.title}',${propertyId})">Contact Agent</button>
+            <button class="btn" onclick="buyFlight(${propertyId})">Buy Flight</button>
             <button class="btn-secondary" onclick="scheduleViewing('${property.title}',${propertyId})">Hold Seat</button>
         </div>
     `;
@@ -467,14 +493,23 @@ function closePropertyModal() {
     document.getElementById('propertyModal').style.display = 'none';
 }
 
-function contactAboutProperty(propertyTitle, propertyId) {
-
-    alert(`Thank you for your interest in "${propertyTitle}"! A booking specialist will contact you shortly.`);
+/**
+ * Purchase a flight. Sends Amplitude revenue fields for currency conversion:
+ * $currency (ISO 4217) + $price + $revenue
+ * https://amplitude.com/docs/data/currency-conversion
+ */
+function buyFlight(propertyId) {
     const property = propertyData[propertyId];
-    
-    // Send custom event to Amplitude using Browser SDK 2
+
+    alert(`Purchase confirmed for "${property.title}" — ${property.price} (${property.currency}).`);
+
     if (typeof amplitude !== 'undefined') {
-        amplitude.track('Clicked Contact Agent', {
+        amplitude.track('Buy Flight', {
+            // Amplitude special revenue properties (enable Currency Converted Revenue / Price)
+            $price: property.priceAmount,
+            $revenue: property.priceAmount,
+            $currency: property.currency,
+            // Flight context
             propertyId: propertyId,
             propertyTitle: property.title,
             propertyPrice: property.price,
@@ -482,15 +517,24 @@ function contactAboutProperty(propertyTitle, propertyId) {
             propertyLocation: property.location,
             propertyBedrooms: property.beds,
             propertyBathrooms: property.baths,
-            propertySqft: property.sqft
-      
+            propertySqft: property.sqft,
         });
-        
-        console.log('Amplitude Clicked Contact Agent event sent for property:', propertyId);
+
+        console.log('Amplitude Buy Flight event sent:', {
+            flightId: propertyId,
+            $price: property.priceAmount,
+            $revenue: property.priceAmount,
+            $currency: property.currency,
+        });
     } else {
-        console.log('Amplitude not loaded - Clicked Contact Agent event for property:', propertyId);
+        console.log('Amplitude not loaded - Buy Flight event for flight:', propertyId);
     }
     closePropertyModal();
+}
+
+// Keep legacy name for any older callers
+function contactAboutProperty(_propertyTitle, propertyId) {
+    buyFlight(propertyId);
 }
 
 function scheduleViewing(propertyTitle, propertyId) {
@@ -500,7 +544,7 @@ function scheduleViewing(propertyTitle, propertyId) {
     
     // Send custom event to Amplitude using Browser SDK 2
     if (typeof amplitude !== 'undefined') {
-        amplitude.track('Clicked Schedule Viewing', {
+        amplitude.track('Clicked Hold Seat', {
             propertyId: propertyId,
             propertyTitle: property.title,
             propertyPrice: property.price,
@@ -512,9 +556,9 @@ function scheduleViewing(propertyTitle, propertyId) {
       
         });
         
-        console.log('Amplitude Clicked Schedule Viewing event sent for property:', propertyId);
+        console.log('Amplitude Clicked Hold Seat event sent for flight:', propertyId);
     } else {
-        console.log('Amplitude not loaded - Clicked Schedule Viewing event for property:', propertyId);
+        console.log('Amplitude not loaded - Clicked Hold Seat event for flight:', propertyId);
     }
     closePropertyModal();
 }
