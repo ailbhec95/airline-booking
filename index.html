@@ -53,7 +53,7 @@
                 <li><a href="#flights">Flights</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li id="subscribeNavItem"><a href="#" onclick="startFreeTrial(); return false;">Subscribe</a></li>
+                <li id="subscribeNavItem"><a href="#" onclick="startFreeTrial(); return false;">Start Free Trial</a></li>
                 <li id="premiumNavItem"><a href="#" onclick="upgradeToPremium(); return false;">Upgrade to Premium</a></li>
                 <li id="loginNavItem"><a href="#" onclick="openLoginModal()">Login</a></li>
             </ul>
@@ -111,83 +111,13 @@
                     </div>
                 </div>
                 <div class="filter-buttons">
-                    <button class="btn" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn" onclick="applyFilters()">Apply Flight Filters</button>
                     <button class="btn-secondary" onclick="clearFilters()">Clear All</button>
                 </div>
             </div>
 
             <div class="flight-grid" id="propertyGrid">
-                <div class="flight-card" data-price="349" data-bedrooms="0" data-type="economy"
-                    onclick="ClickFeatureProperty(1)">
-                    <div class="flight-route-visual economy"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">Economy</div>
-                        <div class="flight-price">$349.00 <span class="flight-currency">USD</span></div>
-                        <h3 class="flight-title">New York → London</h3>
-                        <p class="flight-location">JFK → LHR · Nonstop</p>
-                        <p class="flight-features">7h 15m · Morning departure · NS 214</p>
-                    </div>
-                </div>
-
-                <div class="flight-card" data-price="265" data-bedrooms="1" data-type="economy"
-                    onclick="ClickFeatureProperty(2)">
-                    <div class="flight-route-visual economy"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">Economy</div>
-                        <div class="flight-price">€265.00 <span class="flight-currency">EUR</span></div>
-                        <h3 class="flight-title">Chicago → Madrid</h3>
-                        <p class="flight-location">ORD → MAD · 1 stop</p>
-                        <p class="flight-features">11h 40m · Afternoon · NS 508</p>
-                    </div>
-                </div>
-
-                <div class="flight-card" data-price="132000" data-bedrooms="0" data-type="business"
-                    onclick="ClickFeatureProperty(3)">
-                    <div class="flight-route-visual business"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">Business</div>
-                        <div class="flight-price">¥132,000 <span class="flight-currency">JPY</span></div>
-                        <h3 class="flight-title">Los Angeles → Tokyo</h3>
-                        <p class="flight-location">LAX → HND · Nonstop</p>
-                        <p class="flight-features">11h 05m · Overnight · NS 71</p>
-                    </div>
-                </div>
-
-                <div class="flight-card" data-price="320" data-bedrooms="0" data-type="economy"
-                    onclick="ClickFeatureProperty(4)">
-                    <div class="flight-route-visual economy"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">Economy</div>
-                        <div class="flight-price">£320.00 <span class="flight-currency">GBP</span></div>
-                        <h3 class="flight-title">Boston → Dublin</h3>
-                        <p class="flight-location">BOS → DUB · Nonstop</p>
-                        <p class="flight-features">6h 20m · Evening · NS 336</p>
-                    </div>
-                </div>
-
-                <div class="flight-card" data-price="185" data-bedrooms="2" data-type="economy"
-                    onclick="ClickFeatureProperty(5)">
-                    <div class="flight-route-visual economy"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">Economy</div>
-                        <div class="flight-price">€185.00 <span class="flight-currency">EUR</span></div>
-                        <h3 class="flight-title">Miami → Lisbon</h3>
-                        <p class="flight-location">MIA → LIS · 2 stops</p>
-                        <p class="flight-features">14h 10m · Redeye · NS 902</p>
-                    </div>
-                </div>
-
-                <div class="flight-card" data-price="1680" data-bedrooms="0" data-type="first"
-                    onclick="ClickFeatureProperty(6)">
-                    <div class="flight-route-visual first"></div>
-                    <div class="flight-info">
-                        <div class="flight-type">First</div>
-                        <div class="flight-price">S$1,680.00 <span class="flight-currency">SGD</span></div>
-                        <h3 class="flight-title">San Francisco → Singapore</h3>
-                        <p class="flight-location">SFO → SIN · Nonstop</p>
-                        <p class="flight-features">16h 45m · Flagship suite · NS 1</p>
-                    </div>
-                </div>
+                <!-- Flight cards rendered from propertyData in script.js -->
             </div>
 
             <div class="no-results" id="noResults">
@@ -309,13 +239,13 @@
             <span id="userWelcome"></span>
         </div>
         <div class="user-status-actions">
-            <button type="button" id="subscribeBtn" class="btn btn-subscribe" onclick="startFreeTrial()">Start free trial</button>
+            <button type="button" id="subscribeBtn" class="btn btn-subscribe" onclick="startFreeTrial()">Start Free Trial</button>
             <button type="button" id="upgradePremiumBtn" class="btn btn-premium" onclick="upgradeToPremium()">Upgrade to Premium</button>
             <button class="btn-secondary" onclick="logout()">Logout</button>
         </div>
     </div>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=5"></script>
 </body>
 
 </html>

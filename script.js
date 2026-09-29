@@ -23,6 +23,8 @@ const propertyData = {
         beds: 0,
         baths: 7,
         sqft: "7h 15m",
+        schedule: "Morning departure",
+        flightNumber: "NS 214",
         description: "Morning nonstop to London Heathrow. Soft leather seats, complimentary snacks, and free seat selection within your cabin.",
         features: ["Nonstop", "Wi‑Fi available", "USB power", "Extra legroom option", "Free carry-on"]
     },
@@ -36,6 +38,8 @@ const propertyData = {
         beds: 1,
         baths: 11,
         sqft: "11h 40m",
+        schedule: "Afternoon",
+        flightNumber: "NS 508",
         description: "One convenient connection into Madrid. Ideal for city breaks with solid fare value across the Atlantic.",
         features: ["1 stop", "Checked bag option", "Mobile boarding pass", "Seat map available", "Onboard entertainment"]
     },
@@ -49,6 +53,8 @@ const propertyData = {
         beds: 0,
         baths: 11,
         sqft: "11h 05m",
+        schedule: "Overnight",
+        flightNumber: "NS 71",
         description: "Lie-flat Business overnight to Haneda. Priority check-in, lounge access, and a multi-course meal service.",
         features: ["Lie-flat seat", "Lounge access", "Priority boarding", "Premium dining", "Amenity kit"]
     },
@@ -62,6 +68,8 @@ const propertyData = {
         beds: 0,
         baths: 6,
         sqft: "6h 20m",
+        schedule: "Evening",
+        flightNumber: "NS 336",
         description: "Evening nonstop into Dublin — arrive ready for the day. Popular with weekend travelers and visiting friends.",
         features: ["Nonstop", "Evening departure", "Free carry-on", "Snack service", "USB power"]
     },
@@ -75,6 +83,8 @@ const propertyData = {
         beds: 2,
         baths: 14,
         sqft: "14h 10m",
+        schedule: "Redeye",
+        flightNumber: "NS 902",
         description: "Our lowest fare to Lisbon via two short connections. Perfect when price matters more than speed.",
         features: ["2 stops", "Budget fare", "Mobile boarding pass", "Carry-on included", "Flexible date change (fee)"]
     },
@@ -88,10 +98,45 @@ const propertyData = {
         beds: 0,
         baths: 16,
         sqft: "16h 45m",
+        schedule: "Flagship suite",
+        flightNumber: "NS 1",
         description: "Flagship First Suite nonstop to Singapore. Private suite doors, chef-curated dining, and dedicated cabin crew.",
         features: ["Private suite", "Chef dining", "Chauffeur transfer", "Spa amenity kit", "Priority everything"]
     }
 };
+
+function stopsLabel(stops) {
+    if (stops === 0) return 'Nonstop';
+    if (stops === 1) return '1 stop';
+    return `${stops} stops`;
+}
+
+function renderFlightCards() {
+    const grid = document.getElementById('propertyGrid');
+    if (!grid) return;
+
+    grid.innerHTML = Object.keys(propertyData).map((id) => {
+        const flight = propertyData[id];
+        const cabinClass = flight.type.toLowerCase();
+        return `
+            <div class="flight-card" data-price="${flight.priceAmount}" data-bedrooms="${flight.beds}" data-type="${cabinClass}" data-currency="${flight.currency}"
+                onclick="ClickFeatureProperty(${id})">
+                <div class="flight-route-visual ${cabinClass}"></div>
+                <div class="flight-info">
+                    <div class="flight-type">${flight.type}</div>
+                    <div class="fare-block">
+                        <div class="flight-price">${flight.price}</div>
+                        <span class="currency-chip">${flight.currency}</span>
+                    </div>
+                    <p class="fare-meta">${flight.priceAmount.toLocaleString('en')} ${flight.currency} local fare</p>
+                    <h3 class="flight-title">${flight.title}</h3>
+                    <p class="flight-location">${flight.location} · ${stopsLabel(flight.beds)}</p>
+                    <p class="flight-features">${flight.sqft} · ${flight.schedule} · ${flight.flightNumber}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
 // Login Management Functions (GLOBAL SCOPE)
 function openLoginModal() {
@@ -283,7 +328,7 @@ function startFreeTrial() {
         const identify = new amplitude.Identify().set('plan_type', PLAN_FREE_TRIAL);
         amplitude.identify(identify);
 
-        amplitude.track('Free Trial Started', {
+        amplitude.track('Start Free Trial', {
             source: 'pricing_page',
         });
     }
@@ -310,7 +355,7 @@ function upgradeToPremium() {
         const identify = new amplitude.Identify().set('plan_type', PLAN_PREMIUM);
         amplitude.identify(identify);
 
-        amplitude.track('Premium Upgraded', {
+        amplitude.track('Upgrade to Premium', {
             source: 'pricing_page',
             previous_plan: PLAN_FREE_TRIAL,
         });
@@ -340,6 +385,8 @@ function ClickFeatureProperty(propertyId) {
             propertyBedrooms: property.beds,
             propertyBathrooms: property.baths,
             propertySqft: property.sqft,
+            $price: property.priceAmount,
+            $currency: property.currency,
             pageSection: 'featured_flights',
             action: 'click',
             elementType: 'flight_card'
@@ -432,11 +479,11 @@ function applyFilters() {
         
         // Only send event if at least one filter is applied
         if (Object.keys(filterEventData).length > 0) {
-            amplitude.track('Flight Filter Applied', filterEventData);
-            console.log('Amplitude Flight Filter Applied event sent:', filterEventData);
+            amplitude.track('Apply Flight Filters', filterEventData);
+            console.log('Amplitude Apply Flight Filters event sent:', filterEventData);
         }
     } else {
-        console.log('Amplitude not loaded - Flight Filter Applied event skipped');
+        console.log('Amplitude not loaded - Apply Flight Filters event skipped');
     }
 }
 
@@ -458,31 +505,34 @@ function openPropertyModal(propertyId) {
     const property = propertyData[propertyId];
     const modal = document.getElementById('propertyModal');
     const modalContent = document.getElementById('modalContent');
-    const stopsLabel = property.beds === 0 ? 'Nonstop' : (property.beds === 1 ? '1 stop' : `${property.beds} stops`);
     
     modalContent.innerHTML = `
         <h2>${property.title}</h2>
-        <div style="margin: 1rem 0;">
-            <span style="font-size: 1.5rem; color: var(--red); font-weight: bold;">${property.price}</span>
-            <span style="background: var(--blue); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; margin-left: 1rem;">${property.type}</span>
-            <span style="background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem; font-weight: 600;">${property.currency}</span>
+        <div class="modal-fare">
+            <div class="fare-block">
+                <div class="flight-price">${property.price}</div>
+                <span class="currency-chip">${property.currency}</span>
+            </div>
+            <div class="modal-fare-meta">
+                <span class="flight-type">${property.type}</span>
+                <p class="fare-meta">${property.priceAmount.toLocaleString('en')} ${property.currency} · charged in local currency</p>
+            </div>
         </div>
-        <p style="color: var(--muted); margin-bottom: 0.5rem;">${property.location}</p>
-        <p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">Fare: ${property.priceAmount.toLocaleString('en')} ${property.currency} (local currency)</p>
-        <div style="display: flex; gap: 2rem; margin-bottom: 1rem; color: var(--muted); flex-wrap: wrap;">
-            <span>${stopsLabel}</span>
+        <p class="flight-location">${property.location} · ${stopsLabel(property.beds)}</p>
+        <div class="modal-meta-row">
             <span>${property.sqft}</span>
-            <span>Flight duration ~${property.baths}h</span>
+            <span>${property.schedule}</span>
+            <span>${property.flightNumber}</span>
         </div>
-        <h3 style="margin: 1rem 0;">Flight details</h3>
-        <p style="line-height: 1.6; margin-bottom: 1rem;">${property.description}</p>
-        <h3 style="margin: 1rem 0;">Included</h3>
-        <ul style="margin-bottom: 2rem;">
-            ${property.features.map(feature => `<li style="margin: 0.5rem 0;">${feature}</li>`).join('')}
+        <h3 class="modal-section-title">Flight details</h3>
+        <p class="modal-description">${property.description}</p>
+        <h3 class="modal-section-title">Included</h3>
+        <ul class="modal-features">
+            ${property.features.map(feature => `<li>${feature}</li>`).join('')}
         </ul>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <button class="btn" onclick="buyFlight(${propertyId})">Buy Flight</button>
-            <button class="btn-secondary" onclick="scheduleViewing('${property.title}',${propertyId})">Hold Seat</button>
+        <div class="modal-actions">
+            <button class="btn" onclick="buyFlight(${propertyId})">Buy Flight · ${property.price}</button>
+            <button class="btn-secondary" onclick="scheduleViewing('${property.title.replace(/'/g, "\\'")}',${propertyId})">Hold Seat</button>
         </div>
     `;
     
@@ -544,7 +594,7 @@ function scheduleViewing(propertyTitle, propertyId) {
     
     // Send custom event to Amplitude using Browser SDK 2
     if (typeof amplitude !== 'undefined') {
-        amplitude.track('Clicked Hold Seat', {
+        amplitude.track('Hold Seat', {
             propertyId: propertyId,
             propertyTitle: property.title,
             propertyPrice: property.price,
@@ -556,15 +606,17 @@ function scheduleViewing(propertyTitle, propertyId) {
       
         });
         
-        console.log('Amplitude Clicked Hold Seat event sent for flight:', propertyId);
+        console.log('Amplitude Hold Seat event sent for flight:', propertyId);
     } else {
-        console.log('Amplitude not loaded - Clicked Hold Seat event for flight:', propertyId);
+        console.log('Amplitude not loaded - Hold Seat event for flight:', propertyId);
     }
     closePropertyModal();
 }
 
 // DOM Content Loaded Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+    renderFlightCards();
+
     // Check for existing user session and display if found
     updateUserDisplay();
     
