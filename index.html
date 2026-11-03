@@ -178,16 +178,6 @@
                 <h2>Login</h2>
                 <form class="login-form" id="loginForm">
                     <div class="form-group">
-                        <label for="estateAgent">Travel Partner:</label>
-                        <select id="estateAgent" name="estateAgent" required>
-                            <option value="">Select Travel Partner</option>
-                            <option value="premium-properties">Skyline Travel Group</option>
-                            <option value="downtown-realty">Metro Booking Co.</option>
-                            <option value="riverside-homes">Harbor Voyages</option>
-                            <option value="luxury-estates">Summit Concierge Air</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="loginName">Name:</label>
                         <input type="text" id="loginName" name="name" required>
                     </div>
@@ -212,7 +202,6 @@
     <!-- User Status Display -->
     <div id="userStatus" class="user-status hidden">
         <div class="account-info">
-            <div id="estateAgentDisplay" class="estate-agent-info"></div>
             <span id="planLabel" class="plan-label"></span>
             <span id="userWelcome"></span>
         </div>
@@ -224,7 +213,7 @@
     </div>
 
     <script src="js/bookings.js"></script>
-    <script src="script.js?v=8"></script>
+    <script src="script.js?v=9"></script>
 </body>
 
 </html>

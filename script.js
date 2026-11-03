@@ -159,14 +159,6 @@ function clearLoginError() {
     errorDiv.classList.remove('show');
 }
 
-// Travel partner data for account-level reporting (Amplitude group IDs unchanged)
-const estateAgents = {
-    'premium-properties': 'Skyline Travel Group',
-    'downtown-realty': 'Metro Booking Co.',
-    'riverside-homes': 'Harbor Voyages',
-    'luxury-estates': 'Summit Concierge Air'
-};
-
 /** Plan type for Amplitude user property `plan_type` (persisted in localStorage). */
 const PLAN_FREE = 'free';
 const PLAN_FREE_TRIAL = 'free trial';
@@ -185,63 +177,32 @@ function setPlanType(value) {
     }
 }
 
-function login(name, userId, password, estateAgentId) {
-    
-    // Store user session with travel partner information
+function login(name, userId, password) {
     const userSession = {
         name: name.trim(),
         userId: userId.trim(),
         password: password, // In real app, never store passwords!
-        estateAgentId: estateAgentId,
-        estateAgentName: estateAgents[estateAgentId] || estateAgentId,
         loginTime: new Date().toISOString(),
         sessionId: 'session_' + Date.now(),
         planType: getPlanType()
     };
-    
+
     localStorage.setItem('userSession', JSON.stringify(userSession));
-    
-    // Use Amplitude identify to set user identity and properties
+
     if (typeof amplitude !== 'undefined') {
-        // Set the user ID
         amplitude.setUserId(userId.trim());
-        
-        // Set user properties (plan_type: identify before any events so charts reflect the right segment)
+
         const userObj = new amplitude.Identify();
         userObj.set('userName', name.trim());
         userObj.set('loginMethod', 'form');
         userObj.set('plan_type', getPlanType());
         amplitude.identify(userObj);
-        
-        // Set user to company group for account-level reporting (using "company" as group type)
-        amplitude.setGroup('company', estateAgentId);
-        
-        // Set group properties for the travel partner company
-        const groupObj = new amplitude.Identify();
-        groupObj.set('name', estateAgents[estateAgentId] || estateAgentId);
-        groupObj.set('companyId', estateAgentId);
-        groupObj.set('industry', 'Airlines');
-        groupObj.set('type', 'Travel Partner');
-        amplitude.groupIdentify('company', estateAgentId, groupObj);
-        
-        // Send login event
+
         amplitude.track('User Logged In', {
             loginMethod: 'form'
         });
-        
-        console.log('=== AMPLITUDE DEBUG ===');
-        console.log('User ID set:', userId.trim());
-        console.log('User properties set:', { userName: name.trim(), loginMethod: 'form' });
-        console.log('Group assignment - Type: company, ID:', estateAgentId);
-        console.log('Group properties set:', { 
-            name: estateAgents[estateAgentId], 
-            companyId: estateAgentId, 
-            industry: 'Airlines',
-            type: 'Travel Partner' 
-        });
-        console.log('=== END AMPLITUDE DEBUG ===');
     }
-    
+
     console.log('User logged in:', userSession);
     updateUserDisplay();
     return true;
@@ -272,7 +233,6 @@ function updateUserDisplay() {
     const user = getCurrentUser();
     const userStatus = document.getElementById('userStatus');
     const userWelcome = document.getElementById('userWelcome');
-    const estateAgentDisplay = document.getElementById('estateAgentDisplay');
     const planLabel = document.getElementById('planLabel');
     const subscribeBtn = document.getElementById('subscribeBtn');
     const upgradePremiumBtn = document.getElementById('upgradePremiumBtn');
@@ -303,8 +263,7 @@ function updateUserDisplay() {
         premiumNavItem.style.display = plan === PLAN_FREE_TRIAL ? 'list-item' : 'none';
     }
 
-    if (user && userStatus && userWelcome && estateAgentDisplay) {
-        estateAgentDisplay.textContent = `Account: ${user.estateAgentName}`;
+    if (user && userStatus && userWelcome) {
         userWelcome.textContent = `Welcome, ${user.name}`;
         userStatus.classList.remove('hidden');
     }
@@ -661,20 +620,14 @@ document.addEventListener('DOMContentLoaded', function() {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const estateAgentId = document.getElementById('estateAgent').value;
             const name = document.getElementById('loginName').value;
             const userId = document.getElementById('loginUserId').value;
             const password = document.getElementById('loginPassword').value;
-            
-            if (!estateAgentId) {
-                showLoginError('Please select a travel partner.');
-                return;
-            }
-            
-            if (login(name, userId, password, estateAgentId)) {
+
+            if (login(name, userId, password)) {
                 closeLoginModal();
                 this.reset();
-                alert(`Welcome, ${name}! You are now logged in to ${estateAgents[estateAgentId]}.`);
+                alert(`Welcome, ${name}! You are now logged in.`);
             }
         });
     }

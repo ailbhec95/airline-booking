@@ -903,15 +903,6 @@ footer {
     gap: 0.25rem;
 }
 
-.estate-agent-info {
-    font-size: 0.82rem;
-    color: var(--muted);
-    font-weight: 700;
-    padding: 0.25rem 0.5rem;
-    background: var(--paper);
-    border-left: 3px solid var(--blue);
-}
-
 .user-status span {
     color: var(--blue);
     font-weight: 700;
