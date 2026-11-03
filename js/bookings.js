@@ -1,9 +1,6 @@
 /** Amplitude group type for booking-level (Accounts add-on) analytics */
 const AMPLITUDE_BOOKING_GROUP = 'booking';
 
-/** Use this funnel at **group** level (group type: booking), not per user ID. */
-const BOOKING_FUNNEL_NAME = 'booking_to_check_in';
-
 const DEMO_BOOKINGS = {
     'NS-DEMO01': {
         bookingId: 'NS-DEMO01',
@@ -204,9 +201,7 @@ function setAmplitudeBookingGroup(booking) {
 function buildBookingEventProps(booking, extraProps) {
     const withFlight = attachFlightDetails(booking);
     const props = {
-        funnel: BOOKING_FUNNEL_NAME,
         booking_reference: booking.bookingId,
-        booking_id: booking.bookingId,
         checked_in: !!booking.checkedIn,
         ...extraProps,
     };
@@ -236,7 +231,6 @@ function trackBookingLookupAttempt(bookingId, source) {
     amplitude.track(
         'Booking Lookup Started',
         {
-            funnel: BOOKING_FUNNEL_NAME,
             booking_reference: id,
             source: source || 'retrieve_page',
         },
@@ -252,14 +246,12 @@ function trackBookingLookupResult(bookingId, result, source) {
     if (result.ok) {
         trackBookingEvent('Booking Retrieved', result.booking, {
             source: source || 'retrieve_page',
-            funnel_step: 2,
         });
     } else {
         setAmplitudeBookingGroupForId(id);
         amplitude.track(
             'Booking Lookup Failed',
             {
-                funnel: BOOKING_FUNNEL_NAME,
                 booking_reference: id,
                 failure_reason: result.error,
                 source: source || 'retrieve_page',
@@ -273,23 +265,20 @@ function trackCheckInEvent(eventName, booking, extraProps) {
     trackBookingEvent(eventName, booking, extraProps);
 }
 
-/**
- * Purchase events must be tied to the booking group *before* track()
- * so group funnels work when user A books and user B checks in.
- */
+/** Set booking group before track so group-scoped analysis ties events across users. */
 function trackBuyFlightWithBooking(booking, flightEventProps) {
     if (typeof amplitude === 'undefined' || !booking) {
         return;
     }
     setAmplitudeBookingGroup(booking);
-    const base = buildBookingEventProps(booking, { funnel_step: 1, source: 'buy_flight' });
+    const base = buildBookingEventProps(booking, { source: 'buy_flight' });
     const buyProps = { ...flightEventProps, ...base };
     const options = bookingEventOptions(booking.bookingId);
 
     amplitude.track('Buy Flight', buyProps, options);
     amplitude.track(
         'Booking Created',
-        buildBookingEventProps(booking, { funnel_step: 1, source: 'buy_flight' }),
+        buildBookingEventProps(booking, { source: 'buy_flight' }),
         options
     );
 }

@@ -41,7 +41,7 @@ function renderFlightSummary(booking, extraHtml) {
 function startCheckInFlow(booking) {
     activeBooking = booking;
     setAmplitudeBookingGroup(booking);
-    trackCheckInEvent('Check-in Started', booking, { source: 'check_in_page', funnel_step: 2 });
+    trackCheckInEvent('Check-in Started', booking, { source: 'check_in_page' });
 
     if (booking.checkedIn) {
         showSection('stepDone');
@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
         trackCheckInEvent('Check-in Completed', activeBooking, {
             bags: activeBooking.bags,
             seat: activeBooking.seat,
-            funnel_step: 3,
         });
 
         document.getElementById('boardingPassContent').innerHTML = renderFlightSummary(activeBooking, `
