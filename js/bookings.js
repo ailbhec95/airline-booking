@@ -1,6 +1,9 @@
 /** Amplitude group type for booking-level (Accounts add-on) analytics */
 const AMPLITUDE_BOOKING_GROUP = 'booking';
 
+/** Use this funnel at **group** level (group type: booking), not per user ID. */
+const BOOKING_FUNNEL_NAME = 'booking_to_check_in';
+
 const DEMO_BOOKINGS = {
     'NS-DEMO01': {
         bookingId: 'NS-DEMO01',
@@ -155,11 +158,34 @@ function completeCheckIn(bookingId, options) {
  * Assign user to booking group and set group properties (Accounts add-on).
  * booking_reference is the canonical group property for the PNR / record locator.
  */
+function bookingEventOptions(bookingId) {
+    const id = normalizeBookingId(bookingId);
+    if (!id) {
+        return undefined;
+    }
+    return {
+        groups: {
+            [AMPLITUDE_BOOKING_GROUP]: id,
+        },
+    };
+}
+
+function setAmplitudeBookingGroupForId(bookingId) {
+    if (typeof amplitude === 'undefined') {
+        return;
+    }
+    const id = normalizeBookingId(bookingId);
+    if (!id) {
+        return;
+    }
+    amplitude.setGroup(AMPLITUDE_BOOKING_GROUP, id);
+}
+
 function setAmplitudeBookingGroup(booking) {
     if (typeof amplitude === 'undefined' || !booking) {
         return;
     }
-    const bookingId = booking.bookingId;
+    const bookingId = normalizeBookingId(booking.bookingId);
     amplitude.setGroup(AMPLITUDE_BOOKING_GROUP, bookingId);
 
     const withFlight = attachFlightDetails(booking);
@@ -175,12 +201,10 @@ function setAmplitudeBookingGroup(booking) {
     amplitude.groupIdentify(AMPLITUDE_BOOKING_GROUP, bookingId, groupObj);
 }
 
-function trackBookingEvent(eventName, booking, extraProps) {
-    if (typeof amplitude === 'undefined') {
-        return;
-    }
+function buildBookingEventProps(booking, extraProps) {
     const withFlight = attachFlightDetails(booking);
     const props = {
+        funnel: BOOKING_FUNNEL_NAME,
         booking_reference: booking.bookingId,
         booking_id: booking.bookingId,
         checked_in: !!booking.checkedIn,
@@ -191,39 +215,81 @@ function trackBookingEvent(eventName, booking, extraProps) {
         props.route = withFlight.flight.title;
         props.flight_number = withFlight.flight.flightNumber;
     }
-    amplitude.track(eventName, props);
+    return props;
+}
+
+function trackBookingEvent(eventName, booking, extraProps) {
+    if (typeof amplitude === 'undefined' || !booking) {
+        return;
+    }
+    setAmplitudeBookingGroup(booking);
+    const props = buildBookingEventProps(booking, extraProps);
+    amplitude.track(eventName, props, bookingEventOptions(booking.bookingId));
 }
 
 function trackBookingLookupAttempt(bookingId, source) {
     if (typeof amplitude === 'undefined') {
         return;
     }
-    amplitude.track('Booking Lookup Started', {
-        booking_reference: bookingId.trim().toUpperCase(),
-        source: source || 'retrieve_page',
-    });
+    const id = normalizeBookingId(bookingId);
+    setAmplitudeBookingGroupForId(id);
+    amplitude.track(
+        'Booking Lookup Started',
+        {
+            funnel: BOOKING_FUNNEL_NAME,
+            booking_reference: id,
+            source: source || 'retrieve_page',
+        },
+        bookingEventOptions(id)
+    );
 }
 
 function trackBookingLookupResult(bookingId, result, source) {
     if (typeof amplitude === 'undefined') {
         return;
     }
-    const id = bookingId.trim().toUpperCase();
+    const id = normalizeBookingId(bookingId);
     if (result.ok) {
-        setAmplitudeBookingGroup(result.booking);
-        trackBookingEvent('Booking Retrieved', result.booking, { source: source || 'retrieve_page' });
-    } else {
-        amplitude.track('Booking Lookup Failed', {
-            booking_reference: id,
-            failure_reason: result.error,
+        trackBookingEvent('Booking Retrieved', result.booking, {
             source: source || 'retrieve_page',
+            funnel_step: 2,
         });
+    } else {
+        setAmplitudeBookingGroupForId(id);
+        amplitude.track(
+            'Booking Lookup Failed',
+            {
+                funnel: BOOKING_FUNNEL_NAME,
+                booking_reference: id,
+                failure_reason: result.error,
+                source: source || 'retrieve_page',
+            },
+            bookingEventOptions(id)
+        );
     }
 }
 
 function trackCheckInEvent(eventName, booking, extraProps) {
-    if (booking) {
-        setAmplitudeBookingGroup(booking);
-    }
     trackBookingEvent(eventName, booking, extraProps);
+}
+
+/**
+ * Purchase events must be tied to the booking group *before* track()
+ * so group funnels work when user A books and user B checks in.
+ */
+function trackBuyFlightWithBooking(booking, flightEventProps) {
+    if (typeof amplitude === 'undefined' || !booking) {
+        return;
+    }
+    setAmplitudeBookingGroup(booking);
+    const base = buildBookingEventProps(booking, { funnel_step: 1, source: 'buy_flight' });
+    const buyProps = { ...flightEventProps, ...base };
+    const options = bookingEventOptions(booking.bookingId);
+
+    amplitude.track('Buy Flight', buyProps, options);
+    amplitude.track(
+        'Booking Created',
+        buildBookingEventProps(booking, { funnel_step: 1, source: 'buy_flight' }),
+        options
+    );
 }

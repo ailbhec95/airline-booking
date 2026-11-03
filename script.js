@@ -597,15 +597,11 @@ function buyFlight(propertyId) {
             propertyBathrooms: property.baths,
             propertySqft: property.sqft,
         };
-        if (booking) {
-            eventProps.booking_reference = booking.bookingId;
-            eventProps.booking_id = booking.bookingId;
-        }
-        amplitude.track('Buy Flight', eventProps);
 
-        if (booking && typeof setAmplitudeBookingGroup === 'function') {
-            setAmplitudeBookingGroup(booking);
-            trackBookingEvent('Booking Created', booking, { source: 'buy_flight' });
+        if (booking && typeof trackBuyFlightWithBooking === 'function') {
+            trackBuyFlightWithBooking(booking, eventProps);
+        } else {
+            amplitude.track('Buy Flight', eventProps);
         }
 
         console.log('Amplitude Buy Flight event sent:', {
