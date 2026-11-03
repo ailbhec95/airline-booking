@@ -550,16 +550,26 @@ function closePropertyModal() {
  */
 function buyFlight(propertyId) {
     const property = propertyData[propertyId];
+    const user = getCurrentUser();
+    const passenger = user
+        ? { firstName: user.name.split(' ')[0] || 'Guest', lastName: user.name.split(' ').slice(1).join(' ') || 'Traveler' }
+        : { firstName: 'Guest', lastName: 'Traveler' };
 
-    alert(`Purchase confirmed for "${property.title}" — ${property.price} (${property.currency}).`);
+    let booking = null;
+    if (typeof createBookingFromFlight === 'function') {
+        booking = createBookingFromFlight(propertyId, passenger);
+    }
+
+    const bookingMsg = booking
+        ? ` Your booking reference is ${booking.bookingId}. Save it to retrieve your trip or check in online.`
+        : '';
+    alert(`Purchase confirmed for "${property.title}" — ${property.price} (${property.currency}).${bookingMsg}`);
 
     if (typeof amplitude !== 'undefined') {
-        amplitude.track('Buy Flight', {
-            // Amplitude special revenue properties (enable Currency Converted Revenue / Price)
+        const eventProps = {
             $price: property.priceAmount,
             $revenue: property.priceAmount,
             $currency: property.currency,
-            // Flight context
             propertyId: propertyId,
             propertyTitle: property.title,
             propertyPrice: property.price,
@@ -568,10 +578,21 @@ function buyFlight(propertyId) {
             propertyBedrooms: property.beds,
             propertyBathrooms: property.baths,
             propertySqft: property.sqft,
-        });
+        };
+        if (booking) {
+            eventProps.booking_reference = booking.bookingId;
+            eventProps.booking_id = booking.bookingId;
+        }
+        amplitude.track('Buy Flight', eventProps);
+
+        if (booking && typeof setAmplitudeBookingGroup === 'function') {
+            setAmplitudeBookingGroup(booking);
+            trackBookingEvent('Booking Created', booking, { source: 'buy_flight' });
+        }
 
         console.log('Amplitude Buy Flight event sent:', {
             flightId: propertyId,
+            booking_reference: booking && booking.bookingId,
             $price: property.priceAmount,
             $revenue: property.priceAmount,
             $currency: property.currency,

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check in — Northstar Airways</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.js"></script>
+    <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.engagement.js"></script>
+    <script src="js/amplitude-init.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span class="logo-mark" aria-hidden="true"></span>
+                <a href="index.html" class="logo-link">Northstar Airways</a>
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="retrieve-booking.html">My booking</a></li>
+                <li><a href="check-in.html" aria-current="page">Check in</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="container narrow">
+            <h1 class="section-title">Online check-in</h1>
+            <p class="section-lead">Confirm your details, choose bags, and get your boarding pass.</p>
+
+            <div class="checkin-steps" id="checkinSteps" aria-label="Check-in progress">
+                <span class="checkin-step active" data-step="1">1. Lookup</span>
+                <span class="checkin-step" data-step="2">2. Details</span>
+                <span class="checkin-step" data-step="3">3. Confirm</span>
+            </div>
+
+            <section id="stepLookup" class="booking-panel">
+                <form id="checkinLookupForm" class="booking-form">
+                    <div class="form-group">
+                        <label for="checkinBookingId">Booking reference</label>
+                        <input type="text" id="checkinBookingId" name="bookingId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkinLastName">Last name</label>
+                        <input type="text" id="checkinLastName" name="lastName" required>
+                    </div>
+                    <button type="submit" class="btn">Continue</button>
+                </form>
+                <p id="checkinLookupError" class="form-message form-message--error hidden" role="alert"></p>
+            </section>
+
+            <section id="stepDetails" class="booking-panel hidden">
+                <div id="flightSummary" class="flight-summary"></div>
+                <form id="checkinDetailsForm" class="booking-form">
+                    <div class="form-group">
+                        <label for="bagCount">Checked bags</label>
+                        <select id="bagCount" name="bags">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="seatChoice">Seat preference</label>
+                        <select id="seatChoice" name="seat">
+                            <option value="12A">12A — Window</option>
+                            <option value="12B">12B — Middle</option>
+                            <option value="14C">14C — Aisle</option>
+                            <option value="18F">18F — Window</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="backToLookup">Back</button>
+                        <button type="submit" class="btn">Review &amp; confirm</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="stepConfirm" class="booking-panel hidden">
+                <div id="confirmSummary" class="flight-summary"></div>
+                <button type="button" class="btn" id="completeCheckIn">Complete check-in</button>
+            </section>
+
+            <section id="stepDone" class="booking-panel boarding-pass hidden">
+                <h2 class="boarding-pass-title">You&apos;re checked in</h2>
+                <div id="boardingPassContent"></div>
+                <a href="index.html" class="btn btn-secondary">Back to home</a>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Northstar Airways. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=6"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/check-in.js"></script>
+</body>
+
+</html>

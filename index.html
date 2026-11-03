@@ -10,33 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <!-- Amplitude Analytics with Engagement Plugin -->
     <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.js"></script>
     <script src="https://cdn.amplitude.com/script/f0db16a2ac68ab1c81271aeabdb148de.engagement.js"></script>
-    <script>
-
-        // Add engagement plugin only (session replay should be included)
-        if (window.engagement && window.engagement.plugin) {
-            console.log('Adding engagement plugin...');
-            const engagementPlugin = window.engagement.plugin();
-            console.log('Engagement plugin object:', engagementPlugin);
-            window.amplitude.add(engagementPlugin);
-            console.log('Engagement plugin added');
-        } else {
-            console.warn('Engagement plugin not found');
-        }
-        const sessionReplayTracking = window.sessionReplay.plugin();
-
-        window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
-        // Initialize Amplitude
-        window.amplitude.init('f0db16a2ac68ab1c81271aeabdb148de', {
-            "fetchRemoteConfig": true,
-            "autocapture": true
-        });
-
-        console.log('Amplitude initialized successfully');
-
-    </script>
+    <script src="js/amplitude-init.js"></script>
 
 </head>
 
@@ -51,6 +27,8 @@
             <ul>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#flights">Flights</a></li>
+                <li><a href="retrieve-booking.html">My booking</a></li>
+                <li><a href="check-in.html">Check in</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li id="subscribeNavItem"><a href="#" onclick="startFreeTrial(); return false;">Start Free Trial</a></li>
@@ -245,7 +223,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
+    <script src="js/bookings.js"></script>
 </body>
 
 </html>
