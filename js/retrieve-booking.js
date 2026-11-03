@@ -16,7 +16,7 @@ function renderBookingCard(booking) {
                 <p class="flight-features">${flight.sqft} · ${flight.schedule}</p>
             ` : '<p class="flight-location">Flight details unavailable</p>'}
             <div class="form-actions">
-                <a class="btn" href="check-in.html?booking=${encodeURIComponent(booking.bookingId)}&lastName=${encodeURIComponent(booking.passengerLastName)}">Check in</a>
+                <a class="btn" href="check-in.html?booking=${encodeURIComponent(booking.bookingId)}">Check in</a>
                 <a class="btn-secondary" href="index.html">Book another flight</a>
             </div>
         </div>

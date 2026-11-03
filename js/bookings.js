@@ -27,49 +27,95 @@ const DEMO_BOOKINGS = {
 
 const BOOKINGS_STORAGE_KEY = 'northstarBookings';
 
+function normalizeBookingId(raw) {
+    return (raw || '').trim().toUpperCase();
+}
+
+function readStoredBookings() {
+    try {
+        const raw = localStorage.getItem(BOOKINGS_STORAGE_KEY);
+        if (!raw) {
+            return {};
+        }
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return {};
+        }
+        const normalized = {};
+        Object.keys(parsed).forEach((key) => {
+            const entry = parsed[key];
+            if (!entry || !entry.bookingId) {
+                return;
+            }
+            const id = normalizeBookingId(entry.bookingId);
+            normalized[id] = { ...entry, bookingId: id };
+        });
+        return normalized;
+    } catch (err) {
+        console.warn('Could not read booking storage, using empty store.', err);
+        return {};
+    }
+}
+
 function generateBookingId() {
     const segment = Math.random().toString(36).substring(2, 8).toUpperCase();
     return `NS-${segment}`;
 }
 
 function getAllBookings() {
-    try {
-        const stored = JSON.parse(localStorage.getItem(BOOKINGS_STORAGE_KEY) || '{}');
-        return { ...DEMO_BOOKINGS, ...stored };
-    } catch {
-        return { ...DEMO_BOOKINGS };
-    }
+    const stored = readStoredBookings();
+    return { ...DEMO_BOOKINGS, ...stored };
 }
 
 function saveBooking(booking) {
-    const stored = JSON.parse(localStorage.getItem(BOOKINGS_STORAGE_KEY) || '{}');
-    stored[booking.bookingId] = booking;
-    localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(stored));
+    const id = normalizeBookingId(booking.bookingId);
+    if (!id) {
+        return false;
+    }
+    const record = { ...booking, bookingId: id };
+    const stored = readStoredBookings();
+    stored[id] = record;
+    try {
+        localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(stored));
+        return true;
+    } catch (err) {
+        console.error('Could not save booking to localStorage.', err);
+        return false;
+    }
 }
 
-function createBookingFromFlight(propertyId, passenger) {
+function createBookingFromFlight(propertyId, passenger, bookedBy) {
     const bookingId = generateBookingId();
     const booking = {
         bookingId,
         propertyId: Number(propertyId),
         passengerFirstName: passenger.firstName || 'Guest',
         passengerLastName: passenger.lastName || 'Traveler',
+        bookedByUserId: bookedBy && bookedBy.userId ? bookedBy.userId : null,
+        bookedByName: bookedBy && bookedBy.name ? bookedBy.name : null,
         status: 'confirmed',
         checkedIn: false,
         createdAt: new Date().toISOString(),
     };
-    saveBooking(booking);
+    const saved = saveBooking(booking);
+    if (!saved) {
+        return null;
+    }
     return booking;
 }
 
 function lookupBooking(bookingId, lastName) {
-    const id = (bookingId || '').trim().toUpperCase();
+    const id = normalizeBookingId(bookingId);
+    if (!id) {
+        return { ok: false, error: 'not_found' };
+    }
     const booking = getAllBookings()[id];
     if (!booking) {
         return { ok: false, error: 'not_found' };
     }
-    if (lastName) {
-        const normalized = lastName.trim().toLowerCase();
+    const last = (lastName || '').trim();
+    if (last) {
+        const normalized = last.toLowerCase();
         if (booking.passengerLastName.toLowerCase() !== normalized) {
             return { ok: false, error: 'name_mismatch' };
         }

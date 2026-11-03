@@ -548,21 +548,39 @@ function closePropertyModal() {
  * $currency (ISO 4217) + $price + $revenue
  * https://amplitude.com/docs/data/currency-conversion
  */
+function passengerFromUser(user) {
+    if (!user || !user.name) {
+        return { firstName: 'Guest', lastName: 'Traveler' };
+    }
+    const parts = user.name.trim().split(/\s+/);
+    if (parts.length === 1) {
+        return { firstName: parts[0], lastName: parts[0] };
+    }
+    return {
+        firstName: parts[0],
+        lastName: parts.slice(1).join(' '),
+    };
+}
+
 function buyFlight(propertyId) {
     const property = propertyData[propertyId];
     const user = getCurrentUser();
-    const passenger = user
-        ? { firstName: user.name.split(' ')[0] || 'Guest', lastName: user.name.split(' ').slice(1).join(' ') || 'Traveler' }
-        : { firstName: 'Guest', lastName: 'Traveler' };
+    const passenger = passengerFromUser(user);
 
     let booking = null;
     if (typeof createBookingFromFlight === 'function') {
-        booking = createBookingFromFlight(propertyId, passenger);
+        booking = createBookingFromFlight(propertyId, passenger, user);
     }
 
-    const bookingMsg = booking
-        ? ` Your booking reference is ${booking.bookingId}. Save it to retrieve your trip or check in online.`
-        : '';
+    let bookingMsg = '';
+    if (booking) {
+        bookingMsg =
+            `\n\nBooking reference: ${booking.bookingId}` +
+            `\nPassenger: ${booking.passengerFirstName} ${booking.passengerLastName}` +
+            '\n\nAnyone with this reference can retrieve or check in (demo: book as User A, check in as User B).';
+    } else if (typeof createBookingFromFlight === 'function') {
+        bookingMsg = '\n\nWarning: booking could not be saved in this browser (storage blocked). Demo bookings NS-DEMO01 still work.';
+    }
     alert(`Purchase confirmed for "${property.title}" — ${property.price} (${property.currency}).${bookingMsg}`);
 
     if (typeof amplitude !== 'undefined') {

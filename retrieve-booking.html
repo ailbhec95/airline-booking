@@ -32,7 +32,7 @@
     <main class="page-main">
         <div class="container narrow">
             <h1 class="section-title">Retrieve your booking</h1>
-            <p class="section-lead">Enter your booking reference and last name to view your itinerary. Try <strong>NS-DEMO01</strong> with last name <strong>Rivera</strong>.</p>
+            <p class="section-lead">Enter your booking reference to view the itinerary. Last name is optional (use it for extra verification). Demo: <strong>NS-DEMO01</strong> or any reference shown after you buy a flight.</p>
 
             <div class="booking-panel">
                 <form id="retrieveForm" class="booking-form">
@@ -41,8 +41,8 @@
                         <input type="text" id="bookingId" name="bookingId" placeholder="NS-DEMO01" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="lastName">Last name</label>
-                        <input type="text" id="lastName" name="lastName" placeholder="As on ticket" required>
+                        <label for="lastName">Last name <span class="label-hint">(optional)</span></label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Only if verifying passenger name">
                     </div>
                     <button type="submit" class="btn">Find booking</button>
                 </form>
@@ -59,8 +59,8 @@
         </div>
     </footer>
 
-    <script src="script.js?v=6"></script>
     <script src="js/bookings.js"></script>
+    <script src="script.js?v=7"></script>
     <script src="js/retrieve-booking.js"></script>
 </body>
 

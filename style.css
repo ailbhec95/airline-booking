@@ -716,6 +716,12 @@ nav a:hover {
     font-size: 0.9rem;
 }
 
+.label-hint {
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
 .form-group input,
 .form-group textarea {
     width: 100%;

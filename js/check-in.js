@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showSection('stepDone');
     });
 
-    if (prefillId && prefillLast) {
+    if (prefillId) {
         document.getElementById('checkinLookupForm').requestSubmit();
     }
 });
